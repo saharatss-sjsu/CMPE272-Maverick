@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+admin.site.site_header = 'Maverick - HR Portal'
+
 urlpatterns = [
-	path('', include('apps.frontend.urls')),
+	# path('', include('apps.frontend.urls')),
 	path('admin/', admin.site.urls),
+	path('api/employees/', include('apps.employees.urls')),
 ]

@@ -43,6 +43,8 @@ class Employees(models.Model):
 	last_name = models.CharField(max_length=16)
 	gender = models.CharField(max_length=1)
 	hire_date = models.DateField()
+	def __str__(self):
+		return f"{self.first_name} {self.last_name}"
 	class Meta:
 		managed = False
 		db_table = 'employees'
@@ -57,14 +59,28 @@ class Salaries(models.Model):
 		managed = False
 		db_table = 'salaries'
 		unique_together = (('emp_no', 'from_date'),)
+	def dict(self):
+		return {
+			'emp_no':self.emp_no.emp_no,
+			'salary':self.salary,
+			'from_date':self.from_date,
+			'to_date':self.to_date,
+		}
 
 
 class Titles(models.Model):
-	emp_no = models.OneToOneField(Employees, models.DO_NOTHING, db_column='emp_no', primary_key=True)
-	title = models.CharField(max_length=50)
+	emp_no    = models.OneToOneField(Employees, models.DO_NOTHING, db_column='emp_no', primary_key=True)
+	title     = models.CharField(max_length=50)
 	from_date = models.DateField()
-	to_date = models.DateField(blank=True, null=True)
+	to_date   = models.DateField(blank=True, null=True)
 	class Meta:
 		managed = False
 		db_table = 'titles'
 		unique_together = (('emp_no', 'title', 'from_date'),)
+	def dict(self):
+		return {
+			'emp_no':self.emp_no.emp_no,
+			'title':self.title,
+			'from_date':self.from_date,
+			'to_date':self.to_date,
+		}
