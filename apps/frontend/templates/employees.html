@@ -68,10 +68,10 @@
 					</select>
 				</div>
 				<div class="flex flex-wrap gap-5">
-					<select class="select select-sm select-bordered max-w-xs grow">
+					<select class="select select-sm select-bordered max-w-xs grow" onchange="filter_department(this.value);">
 						<option selected>-- Filter by Department --</option>
 						{% for department in departments %}
-						<option value="{{department.dept_no}}">{{department.dept_name}}</option>
+						<option value="{{department.dept_no}}" {% if employees_filter_department == department.dept_no %}selected{% endif %}>{{department.dept_name}}</option>
 						{% endfor %}
 					</select>
 					<select class="select select-sm select-bordered max-w-xs grow" onchange="filter_title(this.value);">
@@ -100,6 +100,7 @@
 					<div class="grow card-title">
 						Employees
 					</div>
+					<button class="join-item btn btn-sm">Create</button>
 					<div class="join">
 						<button class="join-item btn btn-sm" onclick="pagePrevious()">«</button>
 						<button class="join-item btn btn-sm" id="employees_page"></button>
@@ -176,6 +177,10 @@
 	}
 	function order_ascending(value){
 		urlParams.set("order_ascending", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function filter_department(value){
+		urlParams.set("filter_department", value);
 		window.location.search = '?'+urlParams.toString();
 	}
 	function filter_title(value){

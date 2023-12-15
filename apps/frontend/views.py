@@ -21,7 +21,13 @@ def employees(request):
 	if employees_search is not None:
 		employees = employees.filter(Q(emp_no__contains=employees_search) | Q(first_name__contains=employees_search) | Q(last_name__contains=employees_search))
 
-	# Filter by current job title
+	# Filter by department
+	departments = [x.dict() for x in EmployeeModels.Departments.objects.all()]
+	employees_filter_department = request.GET.get('filter_department')
+	if employees_filter_department in [department['dept_no'] for department in departments]:
+		employees = employees.filter(deptemp__dept_no=employees_filter_department)
+
+	# Filter by job title
 	titles = [x['title'] for x in EmployeeModels.Titles.objects.all().values('title').distinct()]
 	employees_filter_title = request.GET.get('filter_title')
 	if employees_filter_title in titles:
@@ -48,31 +54,33 @@ def employees(request):
 	employees_page_size  = employees.count()
 
 	return render(request, 'employees.html', {
-		'departments':               list(map(lambda x: x.dict(), EmployeeModels.Departments.objects.all())),
-		'titles':                    titles,
-		'employees':                 [{**x.dict(), 'index':((employees_page_index-1)*employees_per_page)+i+1} for i,x in enumerate(employees)],
-		'employees_count':           employees_count,
-		'employees_per_page':        employees_per_page,
-		'employees_page_index':      employees_page_index,
-		'employees_page_count':      employees_page_count,
-		'employees_page_size':       employees_page_size,
+		'departments':                 list(map(lambda x: x.dict(), EmployeeModels.Departments.objects.all())),
+		'titles':                      titles,
+		'employees':                   [{**x.dict(), 'index':((employees_page_index-1)*employees_per_page)+i+1} for i,x in enumerate(employees)],
+		'employees_count':             employees_count,
+		'employees_per_page':          employees_per_page,
+		'employees_page_index':        employees_page_index,
+		'employees_page_count':        employees_page_count,
+		'employees_page_size':         employees_page_size,
 
-		'employees_order_by':        employees_order_by,
-		'employees_order_list':      employees_order_list,
-		'employees_order_ascending': employees_order_ascending,
+		'employees_order_by':          employees_order_by,
+		'employees_order_list':        employees_order_list,
+		'employees_order_ascending':   employees_order_ascending,
 
-		'employees_search':          employees_search,
-		'employees_filter_gender':   employees_filter_gender,
-		'employees_filter_title':    employees_filter_title,
+		'employees_search':            employees_search,
+		'employees_filter_department': employees_filter_department,
+		'employees_filter_title':      employees_filter_title,
+		'employees_filter_gender':     employees_filter_gender,
 	})
 
 
 def employee_detail(request, emp_no):
 	employee = EmployeeModels.Employees.objects.get(emp_no=emp_no)
 	return render(request, 'employee_detail.html', {
-		'employee': employee.dict(),
-		'titles':   [x.dict() for x in EmployeeModels.Titles.objects.filter(emp_no=employee)],
-		'salaries': [x.dict() for x in EmployeeModels.Salaries.objects.filter(emp_no=employee)],
+		'employee':    employee.dict(),
+		'titles':      [x.dict() for x in EmployeeModels.Titles.objects.filter(emp_no=employee)],
+		'salaries':    [x.dict() for x in EmployeeModels.Salaries.objects.filter(emp_no=employee)],
+		'departments': [x.dict() for x in EmployeeModels.DeptEmp.objects.filter(emp_no=employee)],
 	})
 
 def departments(request):

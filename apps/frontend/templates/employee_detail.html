@@ -98,8 +98,33 @@
 
 		<div class="card card-compact bg-base-100 shadow-xl">
 			<div class="card-body">
+				<h2 class="card-title">Department</h2>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Start</th>
+								<th>End</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for department in departments %}
+							<tr>
+								<td>{{department.department.dept_name}}</td>
+								<td>{{department.from_date}}</td>
+								<td>{{department.to_date}}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="card card-compact bg-base-100 shadow-xl">
+			<div class="card-body">
 				<h2 class="card-title">Job Title</h2>
-				
 				<div class="overflow-x-auto">
 					<table class="table">
 						<thead>
@@ -120,14 +145,12 @@
 						</tbody>
 					</table>
 				</div>
-				
 			</div>
 		</div>
 
 		<div class="card card-compact bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Salary</h2>
-				
 				<div class="overflow-x-auto">
 					<table class="table">
 						<thead>
@@ -148,7 +171,6 @@
 						</tbody>
 					</table>
 				</div>
-				
 			</div>
 		</div>
 
