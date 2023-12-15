@@ -1,4 +1,8 @@
 /.vscode
 /credentials
+/static
 .DS_Store
 *.pyc
+
+setup/run_debug.sh
+setup/setup_prd.sh

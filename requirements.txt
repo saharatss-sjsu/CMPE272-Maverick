@@ -1,2 +1,0 @@
-Django==3.2.9
-mysqlclient==2.2.0

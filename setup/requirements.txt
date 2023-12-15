@@ -1,0 +1,5 @@
+Django==3.2.9
+django-allauth==0.57.0
+django-cors-headers==4.2.0
+mysqlclient==2.1.0
+django-sso==3.0.2

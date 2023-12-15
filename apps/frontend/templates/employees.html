@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="corporate">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Maverick - HR Portal</title>
+
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.17/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+
+	<div class="navbar bg-base-100 shadow-md" style="position: sticky; top: 0; z-index: 1;">
+		<div class="md:container md:mx-auto px-0">
+			<div class="flex-1 lg:flex-none">
+				<a class="btn btn-ghost text-xl px-0" href="/">Maverick HR Portal</a>
+				<div class="dropdown">
+					<div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+					</div>
+					<ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+						<li><a href="/" class="active">Employees</a></li>
+						<li><a href="/departments/">Departments</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="flex-1 hidden lg:flex ml-3">
+				<ul class="menu menu-horizontal px-1">
+					<li><a href="/" class="active">Employees</a></li>
+					<li><a href="/departments/">Departments</a></li>
+				</ul>
+			</div>
+			<div class="flex-none">
+				<ul class="menu menu-horizontal px-1">
+					<li>
+						<details>
+							<summary>
+								{{request.user.first_name}}
+							</summary>
+							<ul class="p-2 bg-base-100 rounded-t-none">
+								<li class="menu-title">{{request.user.username}}</li>
+								<li><a href="/logout">Logout</a></li>
+							</ul>
+						</details>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="md:container md:mx-auto py-6 grid gap-5">
+		<div class="card card-compact bg-base-100 shadow-xl">
+			<div class="card-body grid gap-5">
+				<div class="flex flex-wrap gap-5">
+					<div class="flex grow">
+						<input type="text" class="input input-sm input-bordered grow" id="emp_search" placeholder="Search by Name or Employee #" {% if employees_search is not None %}value="{{employees_search}}"{%endif%}>
+						<button class="btn btn-sm" onclick="search(document.getElementById('emp_search').value)">Search</button>
+					</div>
+					<select class="select select-sm select-bordered max-w-xs grow" onchange="order_by(this.value);">
+						{% for order_id in employees_order_list %}
+						<option value="{{order_id}}" id="employees_order_{{order_id}}" {% if order_id == employees_order_by %}selected{% endif %}><script>document.getElementById("employees_order_{{order_id}}").innerHTML = `Sort by ${"{{order_id}}".replace('_',' ')}`</script></option>
+						{% endfor %}
+					</select>
+					<select class="select select-sm select-bordered max-w-xs grow" onchange="order_ascending(this.value);">
+						<option value="true"  {% if employees_order_ascending is True %}selected{%endif%}>↓ Ascending order</option>
+						<option value="false" {% if employees_order_ascending is False %}selected{%endif%}>↑ Descending order</option>
+					</select>
+				</div>
+				<div class="flex flex-wrap gap-5">
+					<select class="select select-sm select-bordered max-w-xs grow">
+						<option selected>-- Filter by Department --</option>
+						{% for department in departments %}
+						<option value="{{department.dept_no}}">{{department.dept_name}}</option>
+						{% endfor %}
+					</select>
+					<select class="select select-sm select-bordered max-w-xs grow" onchange="filter_title(this.value);">
+						<option selected>-- Filter by Job Title --</option>
+						{% for title in titles %}
+						<option value="{{title}}" {% if employees_filter_title == title %}selected{% endif %}>{{title}}</option>
+						{% endfor %}
+					</select>
+					<select class="select select-sm select-bordered max-w-xs grow" onchange="filter_gender(this.value);">
+						<option value="" selected>-- Filter by Gender --</option>
+						<option value="M" {% if employees_filter_gender == 'M' %}selected{%endif%}>Male</option>
+						<option value="F" {% if employees_filter_gender == 'F' %}selected{%endif%}>Female</option>
+					</select>
+					<button class="btn btn-sm btn-outline grow" onclick="filter_reset()">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+						Reset all filters
+					</button>
+				</div>
+			</div>
+		</div>
+	
+		<div class="card card-compact bg-base-100 shadow-xl">
+			<div class="card-body">
+
+				<div class="flex items-center mb-3 gap-5">
+					<div class="grow card-title">
+						Employees
+					</div>
+					<div class="join">
+						<button class="join-item btn btn-sm" onclick="pagePrevious()">«</button>
+						<button class="join-item btn btn-sm" id="employees_page"></button>
+						<button class="join-item btn btn-sm" onclick="pageNext()">»</button>
+					</div>
+					<div id="employees_count"></div>
+				</div>
+
+				<table class="table table-sm">
+					<thead>
+						<tr>
+							<th scope="col">Index</th>
+							<th scope="col">Employee #</th>
+							<th scope="col">First</th>
+							<th scope="col">Last</th>
+							<th scope="col">Gender</th>
+							<th scope="col">Date of birth</th>
+							<th scope="col">Hire date</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for employee in employees %}
+						<tr>
+							<th scope="row">{{employee.index}}</th>
+							<td>{{employee.emp_no}}</td>
+							<td>{{employee.first_name}}</td>
+							<td>{{employee.last_name}}</td>
+							<td>{{employee.gender}}</td>
+							<td>{{employee.birth_date}}</td>
+							<td>{{employee.hire_date}}</td>
+							<td><a class="link link-primary" href="/employee/{{employee.emp_no}}">View</a></td>
+						</tr>
+						{% endfor %}
+						{% if employees_count == 0 %}
+						<tr>
+							<td colspan="8" class="text-center">No employee found</td>
+						</tr>
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");}
+
+	const employees_count      = parseInt("{{employees_count}}");
+	const employees_page_index = parseInt("{{employees_page_index}}");
+	const employees_page_size  = parseInt("{{employees_page_size}}");
+	document.getElementById('employees_page').innerHTML = `Page ${numberWithCommas(employees_page_index)}`;
+	document.getElementById('employees_count').innerHTML = `${numberWithCommas(employees_page_size)} of ${numberWithCommas(employees_count)} employees`;
+
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	function pagePrevious(){
+		urlParams.set("page", employees_page_index-1);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function pageNext(){
+		urlParams.set("page", employees_page_index+1);
+		window.location.search = '?'+urlParams.toString();
+	}
+
+	
+	function search(value){
+		urlParams.set("search", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function order_by(value){
+		urlParams.set("order_by", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function order_ascending(value){
+		urlParams.set("order_ascending", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function filter_title(value){
+		urlParams.set("filter_title", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function filter_gender(value){
+		urlParams.set("filter_gender", value);
+		window.location.search = '?'+urlParams.toString();
+	}
+	function filter_reset(){
+		window.location.search = '';
+	}
+</script>
+</html>

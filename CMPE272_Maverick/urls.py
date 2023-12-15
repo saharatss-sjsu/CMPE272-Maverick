@@ -16,11 +16,17 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from django.http import HttpResponse
 
 admin.site.site_header = 'Maverick - HR Portal'
 
+from apps.frontend import views as FrontendViews
+def health_check(request): return  HttpResponse(status=200)
+
 urlpatterns = [
-	# path('', include('apps.frontend.urls')),
+	path('health', health_check),
 	path('admin/', admin.site.urls),
 	path('api/employees/', include('apps.employees.urls')),
+	path('', include('apps.frontend.urls')),
+	path('', include('django_sso.sso_gateway.urls')),
 ]
