@@ -36,7 +36,7 @@
 					<li>
 						<details>
 							<summary>
-								{{request.user.first_name}}
+								{{request.user.first_name}} {{request.user.last_name}}
 							</summary>
 							<ul class="p-2 bg-base-100 rounded-t-none">
 								<li class="menu-title">{{request.user.username}}</li>
@@ -153,7 +153,7 @@
 	const employees_page_index = parseInt("{{employees_page_index}}");
 	const employees_page_size  = parseInt("{{employees_page_size}}");
 	document.getElementById('employees_page').innerHTML = `Page ${numberWithCommas(employees_page_index)}`;
-	document.getElementById('employees_count').innerHTML = `${numberWithCommas(employees_page_size)} of ${numberWithCommas(employees_count)} employees`;
+	document.getElementById('employees_count').innerHTML = `${numberWithCommas(employees_count)} employees`;
 
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);

@@ -8,21 +8,18 @@ from django.views.decorators.http import require_http_methods
 
 from apps.employees import models as EmployeesModels
 
-import json
-import datetime
-
 @csrf_exempt
 @require_http_methods(["GET"])
-def EmployeeGetTitles(request):
-	if not request.user.is_authenticated: return HttpResponse(status=401)
-	emp_no     = request.GET.get('emp_no')
-	title_objs = EmployeesModels.Titles.objects.filter(emp_no=emp_no)
-	return JsonResponse({"titles": list(map(lambda x: x.dict(), title_objs))})
-
-@csrf_exempt
-@require_http_methods(["GET"])
-def EmployeeGetSalaries(request):
-	if not request.user.is_authenticated: return HttpResponse(status=401)
-	emp_no     = request.GET.get('emp_no')
-	salary_objs = EmployeesModels.Salaries.objects.filter(emp_no=emp_no)
-	return JsonResponse({"salaries": list(map(lambda x: x.dict(), salary_objs))})
+def GetEmployee(request, emp_no):
+	# if not request.user.is_authenticated: return HttpResponse(status=401)
+	try:
+		employee = EmployeesModels.Employees.objects.get(emp_no=emp_no)
+		departments = EmployeesModels.DeptEmp.objects.filter(emp_no=emp_no).order_by('to_date')
+		titles      = EmployeesModels.Titles.objects.filter(emp_no=emp_no).order_by('to_date')
+		return JsonResponse({"employee": {
+			**employee.dict(),
+			'departments': [x.dict() for x in departments],
+			'titles':      [x.dict() for x in titles],
+		}})
+	except EmployeesModels.Employees.DoesNotExist:
+		return JsonResponse({"employee": None})

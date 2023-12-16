@@ -7,5 +7,6 @@ zip -r server_backend.zip CMPE272_Maverick -i \
 	"CMPE272_Maverick/credentials/mysql.cnf" \
 	"CMPE272_Maverick/setup/*.service" \
 	"CMPE272_Maverick/setup/requirements.txt" \
+	"CMPE272_Maverick/templates/django_sso/*" \
 	"CMPE272_Maverick/manage.py" \
 

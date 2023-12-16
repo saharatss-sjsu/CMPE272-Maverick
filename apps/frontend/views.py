@@ -1,11 +1,16 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
 
 from apps.employees import models as EmployeeModels
 import math
 
+def staff_check(user):
+	return user.is_staff
+
 @login_required
+@user_passes_test(staff_check, login_url='/logout/')
 def employees(request):
 	employees_order_by = request.GET.get('order_by')
 	employees_order_list = ['emp_no', 'first_name', 'last_name', 'birth_date', 'hire_date']
@@ -34,7 +39,7 @@ def employees(request):
 		employees = employees.filter(titles__title=employees_filter_title)
 
 	# Filter by gender
-	employees_filter_gender = request.GET.get('employees_filter_gender')
+	employees_filter_gender = request.GET.get('filter_gender')
 	if employees_filter_gender in ['M','F']:
 		employees = employees.filter(gender=employees_filter_gender)
 
@@ -50,7 +55,8 @@ def employees(request):
 	employees_page_count = math.ceil(employees_count/employees_per_page)
 	if employees_page_index < 1: employees_page_index = 1
 	if employees_page_index > employees_page_count: employees_page_index = employees_page_count
-	employees            = employees[(employees_page_index-1)*employees_per_page : (employees_page_index)*employees_per_page]
+	if employees.count() > employees_per_page:
+		employees = employees[(employees_page_index-1)*employees_per_page : (employees_page_index)*employees_per_page]
 	employees_page_size  = employees.count()
 
 	return render(request, 'employees.html', {
@@ -73,7 +79,8 @@ def employees(request):
 		'employees_filter_gender':     employees_filter_gender,
 	})
 
-
+@login_required
+@user_passes_test(staff_check, login_url='/logout/')
 def employee_detail(request, emp_no):
 	employee = EmployeeModels.Employees.objects.get(emp_no=emp_no)
 	return render(request, 'employee_detail.html', {
@@ -83,6 +90,8 @@ def employee_detail(request, emp_no):
 		'departments': [x.dict() for x in EmployeeModels.DeptEmp.objects.filter(emp_no=employee)],
 	})
 
+@login_required
+@user_passes_test(staff_check, login_url='/logout/')
 def departments(request):
 	departments       = EmployeeModels.Departments.objects.all()
 	departments_count = departments.count()
