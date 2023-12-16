@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrategicMonk Consultants</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #ffe4b5; /* Moccasin */
+            color: #4c3c2d; /* Dark Brown Text */
+        }
+
+        header {
+            background: #8b4513; /* Saddle Brown */
+            color: #fff;
+            padding: 20px;
+            text-align: left;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px; /* Increased font size */
+        }
+
+        nav {
+            background: #a0522d; /* Sienna */
+            color: #fff;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #b03a2e; /* Rusty Red */
+        }
+
+        main {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+
+        .greeting-box,
+        .meeting-box,
+        .team-box,
+        .manager-box,
+        .task-box,
+        .timezones-box {
+            flex-basis: calc(50% - 20px); /* Equal size for 2 columns */
+            margin-bottom: 20px;
+            background: #f7d7a8; /* BurlyWood */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .manager-box img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .team-members ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .team-members li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .status-online {
+            background-color: #2ecc71; /* Emerald */
+        }
+
+        .status-offline {
+            background-color: #e74c3c; /* Alizarin Crimson */
+        }
+
+        .timezones-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        footer {
+            background: #8b4513; /* Saddle Brown */
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>StrategicMonk Consultants</h1>
+    </header>
+
+    <nav>
+        <div>
+            <a href="#">Dashboard</a>
+            <a href="#">Profile</a>
+            <a href="#">Leave Requests</a>
+            <a href="#">Employee Directory</a>
+        </div>
+        <div>
+            <a href="/logout">Logout</a> <!-- Logout button added -->
+            <div id="clock"></div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="greeting-box">
+            <h2 id="greeting"></h2>
+            <p>Embrace the challenges ahead with a smile and positive energy! Make sure you take the Holidays to recharge yourselves!!</p>
+        </div>
+
+        <div class="meeting-box">
+            <h2>Upcoming Meetings</h2>
+            <ul>
+                <li>Strategy Review - 10:00 AM</li>
+                <li>Client Presentation - 2:00 PM</li>
+                <li>Team Collaboration - 4:30 PM</li>
+            </ul>
+        </div>
+
+        <div class="team-box">
+            <h2>Your Team</h2>
+            <div class="team-members">
+                <ul>
+                    <li>
+                        John Doe - Management Consultant
+                        <div class="status-circle status-online"></div>
+                    </li>
+                    <li>
+                        Jane Smith - Senior Consultant
+                        <div class="status-circle status-offline"></div>
+                    </li>
+                    <li>
+                        Michael Johnson - Strategy Analyst
+                        <div class="status-circle status-online"></div>
+                    </li>
+                    <li>
+                        Emily Brown - Project Manager
+                        <div class="status-circle status-online"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="manager-box">
+            <h2>Your Manager</h2>
+            <div class="manager-info">
+                <img src="https://via.placeholder.com/50" alt="Manager Image">
+                <p>Manager: <strong>Robert Anderson</strong></p>
+                <div class="status-circle status-online"></div>
+            </div>
+        </div>
+
+        <div class="task-box">
+            <h2>Your Tasks</h2>
+            <ul>
+                <li>Conduct client analysis for Project X</li>
+                <li>Prepare strategy proposal for Team Collaboration meeting</li>
+                <li>Review and provide feedback on team member reports</li>
+            </ul>
+        </div>
+
+        <div class="timezones-box">
+            <h2>City Time Zones</h2>
+            <div>
+                <p>New York Office: <span id="ny-time"></span></p>
+                <p>London Office: <span id="ldn-time"></span></p>
+                <p>Tokyo Office: <span id="tokyo-time"></span></p>
+                <p>Sydney Office: <span id="sydney-time"></span></p>
+                <p>Dubai Office: <span id="dubai-time"></span></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Created by: Team Mavericks for Enterprise Software Platforms</p>
+    </footer>
+
+    <script>
+        // JavaScript to display a greeting based on the current time
+        document.addEventListener('DOMContentLoaded', function () {
+            var greetingBox = document.getElementById('greeting');
+            var currentDate = new Date();
+            var currentHour = currentDate.getHours();
+
+            if (currentHour < 12) {
+                greetingBox.textContent = 'Good Morning!';
+            } else if (currentHour < 18) {
+                greetingBox.textContent = 'Good Afternoon!';
+            } else {
+                greetingBox.textContent = 'Good Evening!';
+            }
+
+            // Clock function for each timezone
+            function updateClock(city, offset) {
+                var now = new Date();
+                var utc = now.getTime() + now.getTimezoneOffset() * 60000;
+                var time = new Date(utc + 3600000 * offset);
+                var hours = time.getHours();
+                var minutes = time.getMinutes();
+
+                document.getElementById(city + "-time").textContent =
+                    hours.toString().padStart(2, "0") +
+                    ":" +
+                    minutes.toString().padStart(2, "0");
+            }
+
+            setInterval(function () {
+                updateClock("ny", -5);
+                updateClock("ldn", 0);
+                updateClock("tokyo", 9);
+                updateClock("sydney", 11);
+                updateClock("dubai", 4);
+            }, 1000);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SageWise Consultants</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #050505; /* Dark black background */
+            color: #ccc; /* Light grey text color */
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* 100% of the viewport height */
+        }
+
+        header {
+            background: #0d0d0d; /* Charcoal grey header background */
+            color: #fff; /* White header text color */
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #333; /* Slightly darker grey border for header */
+        }
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+            background: #0d0d0d; /* Charcoal grey navigation background */
+            padding: 10px;
+            margin-bottom: 10px; /* Added space between navbar and main content */
+            border-bottom: 2px solid #333; /* Slightly darker grey border for navigation */
+        }
+
+        nav a {
+            color: #fff; /* White navigation link color */
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        section {
+            display: flex;
+            flex-grow: 1;
+            height: 100%; /* 100% of the parent's height */
+        }
+
+        .sidebar {
+            width: 25%;
+            background: #0d0d0d; /* Charcoal grey sidebar background */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding-left: 20px;
+            display: flex;
+            flex-wrap: wrap; /* Enable wrapping for a new row */
+            gap: 20px; /* Gap between each box */
+            justify-content: space-between; /* Evenly distribute space between boxes */
+        }
+
+        .matrix-box {
+            width: calc(26.67% - 20px); /* 26.67% width with 20px gap */
+            height: calc(40% - 20px); /* 40% height with 20px gap */
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for contrast */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            color: #fff; /* White text color */
+            background: #0d0d0d; /* Charcoal grey background for matrix boxes */
+            border: 2px solid #333; /* Slightly darker grey border for matrix boxes */
+        }
+
+        #company-news {
+            background: #1a1a1a; /* Dark grey background for company news */
+            padding: 20px;
+        }
+
+        .matrix-box {
+            background: #0d0d0d; /* Charcoal grey background for matrix boxes */
+            padding: 20px;
+        }
+
+        footer {
+            background: #0d0d0d; /* Charcoal grey background for footer */
+            color: #ccc; /* Light grey footer text color */
+            text-align: center;
+            padding: 10px;
+            border-top: 2px solid #333; /* Slightly darker grey border for footer */
+        }
+
+        h1 {
+            margin-left: 20px; /* Add space to the left of SageWise Consultants */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SageWise Consultants</h1>
+    </header>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Profile</a>
+        <a href="#">Settings</a>
+        <a href="/logout" style="margin-left: auto;">Logout</a>
+    </nav>
+
+    <section>
+        <div class="sidebar">
+            <!-- Sidebar Content Goes Here -->
+            <h2>Welcome back, </h2>
+            <p id="employee_name"></p>
+            <p id="employee_position">Position: Unknown</p>
+            <p id="employee_department">Department: Unknown</p>
+            <p id="employee_id">Employee ID: Unknown</p>
+        </div>
+
+        <div class="main-content">
+            <div class="matrix-box">
+                <h2>Company News</h2>
+                <p>SageWise Consultants Announces Record-Breaking Profits</p>
+                <p>New Partnership with Global Tech Innovator</p> 
+                <p>SageWise Named Best Workplace for Diversity</p>
+            </div>
+            <div class="matrix-box">
+                <h2>Upcoming Meetings</h2>
+                <p>Meeting 1 - Date: 19/12/2023</p>
+                <p>Meeting 2 - Date: 20/12/2023</p>
+                <p>Meeting 3 - Date: 22/12/2023</p>
+               
+            </div>
+            <div class="matrix-box">
+                <h2>Messages</h2>
+                <p>Message(Unread) From: Manager</p>
+                <p>Message(Read) From: Colleague</p>
+            </div>
+            <div class="matrix-box">
+                <h2>Team</h2>
+                <p>Jason Mamoa</p>
+                <p> Chris Dahmer</p>
+		<p> Jenny Miller</p>
+                <!-- Add more team members as needed -->
+            </div>
+            <div class="matrix-box">
+                <h2>KPIs</h2>
+                <p>Closed Targets: 19/25</p>
+                <p>Biweekly Average: 20,000 $ </p>
+            </div>
+            <div class="matrix-box">
+                <h2>Leave Schedule</h2>
+                <p>Leave Request 1 - Approved</p>
+                <p>Leave Request 2 - Pending</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 SageWise Consultants</p>
+    </footer>
+
+</body>
+
+<script>
+    fetch('https://hr.saharatss.org/api/employee/get/{{user.username}}',{
+        'mode': 'cors',
+        'credentials': 'include',
+    })
+    .then(data => data.json())
+    .then(data => {
+        const employee = data.employee;
+        console.log(employee);
+        document.getElementById('employee_name').innerHTML = `${employee.first_name} ${employee.last_name}`
+        document.getElementById('employee_position').innerHTML = `Position: ${employee.titles[0]?.title}`
+        document.getElementById('employee_department').innerHTML = `Department: ${employee.departments[0]?.department.dept_name}`
+        document.getElementById('employee_id').innerHTML = `Employee ID: ${employee.emp_no}`
+    })
+</script>
+</html>
